@@ -16,5 +16,13 @@
   },
   "scripts": {
     "start": "cds-serve"
+  },
+  "cds": {
+    "requires": {
+      "db": {
+        "kind": "postgres"
+      },
+      "auth": "mocked"
+    }
   }
 }
