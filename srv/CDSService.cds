@@ -7,11 +7,11 @@ using {
 
 service CDSService @(path: '/CatalogService') {
 
-    entity POWorklist as projection on CDSView.POWorklist;
-
-  
-
-        
-
+    entity POWorklist       as projection on CDSView.POWorklist;
+    entity ProductOrders    as projection on CDSView.ProductView;
+    entity PurchaseOrderSet as projection on CDSView.POWorklist;
+    entity ItemView         as projection on CDSView.ItemView;
+    entity ProductSet       as projection on CDSView.ProductView;
+    entity ProductSales     as projection on CDSView.CProductValuesView;
 
 }
