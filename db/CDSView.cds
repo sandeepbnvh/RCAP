@@ -46,5 +46,65 @@ context CDSView {
             ITEMS.TAX_AMOUNT                      as ![TaxAmount],        // Tax amount for the item
             ITEMS.GROSS_AMOUNT                    as ![GrossAmount],      // Total gross amount for the item (net + tax)
             ITEMS.CURRENCY_CODE                   as ![CurrencyCode]      // Currency for the item pricing
-        }
+        };
+
+          define view ProductVH as
+        select from master.product {
+            @EndUserText.label: [{
+                langauge: 'EN',
+                text    : 'Product ID'
+            }, {
+                langauge: 'DE',
+                text    : 'Prodekt ID'
+            }]
+            PRODUCT_ID  as ![Product ID],
+            @EndUserText.label: [{
+                langauge: 'DE',
+                text    : 'Product Description'
+            }, {
+                langauge: 'DE',
+                text    : 'Prodekt Description'
+            }]
+            DESCRIPTION as ![Description]
+        };
+
+        define view![ItemView] as 
+        select from transaction.poitems{
+            PARENT_KEY.PARTNER_GUID.NODE_KEY as ![Partner],
+            PRODUCT_GUID.NODE_KEY as ![ProductId],
+            CURRENCY_CODE as ![CurrencyCode],
+            GROSS_AMOUNT as ![GrossAmount],
+            NET_AMOUNT as ![NetAmount],
+            TAX_AMOUNT as ![TaxAmount],
+            PARENT_KEY.OVERALL_STATUS as ![POStaus]
+        };
+
+       
+    define view ProductView as select from master.product
+    // Mixin is a keyword to define lose coupling
+    //which will never load items data for product rather load on demand 
+    mixin{
+        //View on view
+        PO_ORDER: Association[*] to ItemView on PO_ORDER.ProductId = $projection.ProductId 
+    } into {
+        NODE_KEY as![ProductId],
+        DESCRIPTION as![Description],
+        CATEGORY as![Category],
+        PRICE as![Price],
+        SUPPLIER_GUID.BP_ID as![SupplierId],
+        SUPPLIER_GUID.COMPANY_NAME as![SupplierName],
+        SUPPLIER_GUID.ADDRESS_GUID.CITY as![City],
+        SUPPLIER_GUID.ADDRESS_GUID.COUNTRY as![Country],
+        //exposed association, at runtime in odata we will see a link to load
+        //dependent data
+        PO_ORDER as![To_Items]
+    };
+
+    define view CProductValuesView as
+        select from ProductView{
+            ProductId,
+            Country,
+            round(sum(To_Items.GrossAmount),2) as![TotalPurchaseAmount] : Decimal(10,2),
+            To_Items.CurrencyCode as![CurrencyCode]
+        } group by ProductId, Country, To_Items.CurrencyCode;
 }
