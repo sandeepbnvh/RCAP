@@ -16,23 +16,5 @@
   },
   "scripts": {
     "start": "cds-serve"
-  },
-  "cds": {
-    "requires": {
-      "db": {
-        "kind": "postgres",
-        "impl": "@cap-js/postgres",
-        "credentials": {
-          "host": "dpg-cv0s5c5svqrc738v67kg-a",
-          "port": 5432,
-          "database": "bnvh",
-          "user": "bnvh_user",
-          "password": "TJWIewZRu1g1KFhyPWGXfKzKYYAWmtjd"
-        }
-      },
-      "auth": {
-        "kind": "mocked"
-      }
-    }
   }
 }
